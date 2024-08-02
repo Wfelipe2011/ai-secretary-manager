@@ -22,9 +22,12 @@
   "dependencies": {
     "@langchain/google-genai": "^0.0.23",
     "@langchain/openai": "^0.2.5",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
     "langchain": "^0.2.12",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",

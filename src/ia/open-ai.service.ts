@@ -7,7 +7,7 @@ export class OpenAIService {
 
   constructor() {
     this.llm = new ChatOpenAI({
-      apiKey: 'sk-svcacct-bOAeE2JliZUrz4CzROOLT3BlbkFJxh6Fg4H3ASWAR0Wu6x4p',
+      apiKey: process.env.OPENAI_API_KEY,
       model: 'gpt-4o-mini',
       temperature: 0.9,
     });
