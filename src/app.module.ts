@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { OpenAIService } from './ia/open-ai.service';
 import { SalesPromptService } from './ia/prompt.service';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, ScheduleModule.forRoot()],
   controllers: [AppController],
   providers: [AppService, OpenAIService, SalesPromptService],
 })
