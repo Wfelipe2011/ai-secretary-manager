@@ -1,3 +1,4 @@
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { OpenAIService } from "src/ia/open-ai.service";
 import { GoogleCalendarService } from "src/services/GoogleCalendarService";
 import { LlamaIndexService } from "src/services/LlamaIndexService";
@@ -21,8 +22,7 @@ export class AppointmentAI {
         // Gerar uma pergunta clara para o LlamaIndex
         const prompt = `
       O usuário fez a seguinte pergunta: "${question}".
-      Responda com base nos compromissos agendados para os próximos 30 dias.
-      Utilize uma linguagem simples e objetiva.
+      Responda com base nos compromissos agendados para os próximos 30 dias de forma humanizado.
     `;
 
         // Consultar o LlamaIndex
@@ -32,9 +32,9 @@ export class AppointmentAI {
 
     private async generateOptimizedQuestion(context: string): Promise<string> {
         const prompt = `
-        Dado o seguinte contexto: "${context}",
-        gere uma pergunta clara e específica para buscar informações relacionadas a compromissos no calendário.
-        A pergunta deve ser direta e objetiva, focada em eventos futuros.
+      Given the following context: "${context}", generate a clear and specific question to search for information related to calendar events. 
+      The question should be direct and focused on events starting from ${new Date().toISOString()}. 
+      If the query mentions a specific day, calculate the corresponding date and use it YYYY-MM-DD.
         `;
 
         const result = await this.openAIService.llm.invoke(prompt);
