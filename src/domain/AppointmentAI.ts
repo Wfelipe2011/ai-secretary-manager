@@ -1,14 +1,14 @@
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { OpenAIService } from "src/ia/open-ai.service";
-import { GoogleCalendarService } from "src/services/GoogleCalendarService";
+import { PrismaService } from "src/prisma/prisma.service";
 import { LlamaIndexService } from "src/services/LlamaIndexService";
+import dayjs from 'dayjs';
 
 export class AppointmentAI {
 
-    constructor(private calendarService: GoogleCalendarService, private llamaService: LlamaIndexService, private openAIService: OpenAIService) { }
+    constructor(private prismaService: PrismaService, private llamaService: LlamaIndexService) { }
 
-    async handleUserQuestion(context: string, accessToken: string) {
-        const events = await this.calendarService.getEvents(accessToken);
+    async handleUserQuestion(context: string) {
+        const events = await this.prismaService.schedule.findMany();
 
         if (events.length === 0) {
             return 'Não encontrei nenhum compromisso nos próximos 30 dias.';
@@ -16,7 +16,12 @@ export class AppointmentAI {
         const question = await this.generateOptimizedQuestion(context);
         console.log(`Generated question: ${question}`);
         // Construir o índice com base nos eventos obtidos
-        await this.llamaService.buildQueryEngine(events);
+        await this.llamaService.buildQueryEngine(events.map(event => ({
+            id: event.id,
+            titulo: event.title,
+            dataHora: dayjs(event.start).toISOString(),
+            duracao: dayjs(event.end).diff(dayjs(event.start), 'minutes')
+        })));
 
 
         // Gerar uma pergunta clara para o LlamaIndex
@@ -36,8 +41,8 @@ export class AppointmentAI {
       The question should be direct and focused on events starting from ${new Date().toISOString()}. 
       If the query mentions a specific day, calculate the corresponding date and use it YYYY-MM-DD.
         `;
-
-        const result = await this.openAIService.llm.invoke(prompt);
+        const llm = OpenAIService.getLlm();
+        const result = await llm.invoke(prompt);
         return result?.content as string || 'Qual é o meu próximo compromisso?';
     }
 }

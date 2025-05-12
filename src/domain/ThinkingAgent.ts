@@ -1,0 +1,54 @@
+import { StateAnnotation } from "./core"
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { CategorizationAgent } from "./CategorizationAgent";
+import { ActionType } from "src/enums/ActionType";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import { ChatOpenAI } from "@langchain/openai";
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+const model = new ChatOpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: "o4-mini",
+});
+
+const systemMessageTemplate = ChatPromptTemplate.fromTemplate(`
+Você é um reescritor de mensagens. Sua tarefa é reescrever a mensagem do usuário de forma mais clara e objetiva, mantendo o mesmo significado.
+1. [Contexto: Texto anterior] — Utilize o contexto fornecido para compreender o sentido da mensagem.
+2. [Formatação de Datas/Horários: ISO 8601] — Se houver datas ou horários, converta-os para o formato 'YYYY-MM-DDThh:mm:ssZ'. Use {now} para cálculos relativos.
+3. [Reescrita: primeira pessoa] — Reescreva a mensagem do usuário de forma clara, objetiva e concisa, mantendo o mesmo significado e sem adicionar informações extras.
+`);
+
+type Response = {
+    messages: SystemMessage[];
+    action: ActionType;
+    input: string;
+};
+
+export const ThinkingAgent = async (state: typeof StateAnnotation.State): Promise<Response> => {
+    console.log("Entrando no nó: thinking_agent");
+    console.log("Ação atual:", state.action);
+    console.log('mensagens:', state.messages.map((message) => message.content).join("\n"));
+    const systemMessagePrompt = await systemMessageTemplate.invoke({
+        now: dayjs().tz("America/Sao_Paulo").format(),
+    });
+
+    const systemResponse = await model.invoke([
+        new SystemMessage(systemMessagePrompt.messages[0]),
+        ...state.messages,
+    ]);
+    console.log("Resposta do modelo no thinking_agent:", systemResponse.content);
+
+    const categorizationResponse = await CategorizationAgent.invoke(systemResponse);
+    console.log("Categorização processada no thinking_agent:", categorizationResponse.action);
+
+    return {
+        messages: [new HumanMessage({ content: systemResponse.content })],
+        action: categorizationResponse.action,
+        input: systemResponse.content.toString(),
+    }
+}

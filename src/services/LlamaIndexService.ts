@@ -16,12 +16,12 @@ Settings.nodeParser = new SentenceSplitter({ chunkSize: 1024 });
 export class LlamaIndexService {
   private queryEngine: RouterQueryEngine | null = null;
 
-  async buildQueryEngine(events: Array<{ id: string; titulo: string; descricao: string; dataHora: string; duracao: number }>) {
+  async buildQueryEngine(events: Array<{ id: string; titulo: string; dataHora: string; duracao: number }>) {
     const documents = events.map(
       (event) =>
         new Document({
           id_: event.id,
-          text: `Compromisso: ${event.titulo}. Descrição: ${event.descricao || 'Sem descrição'}. Início: ${event.dataHora}. Duração: ${event.duracao} minutos.`,
+          text: `Compromisso: ${event.titulo}. Início: ${event.dataHora}. Duração: ${event.duracao} minutos.`,
         })
     );
 
