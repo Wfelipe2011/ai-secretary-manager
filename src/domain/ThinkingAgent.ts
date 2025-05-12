@@ -23,12 +23,6 @@ Você é um reescritor de mensagens. Sua tarefa é reescrever a mensagem do usu�
 3. [Reescrita: primeira pessoa] — Reescreva a mensagem do usuário de forma clara, objetiva e concisa, mantendo o mesmo significado e sem adicionar informações extras.
 `);
 
-type Response = {
-    messages: SystemMessage[];
-    action: ActionType;
-    input: string;
-};
-
 export const ThinkingAgent = async (state: typeof StateAnnotation.State): Promise<Response> => {
     console.log("Entrando no nó: thinking_agent");
     console.log("Ação atual:", state.action);
@@ -52,3 +46,9 @@ export const ThinkingAgent = async (state: typeof StateAnnotation.State): Promis
         input: systemResponse.content.toString(),
     }
 }
+
+type Response = {
+    messages: SystemMessage[];
+    action: ActionType;
+    input: string;
+};

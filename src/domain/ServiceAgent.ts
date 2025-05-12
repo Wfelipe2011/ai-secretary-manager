@@ -15,12 +15,6 @@ const systemMessage = `
   do not answer directly or gather details yourself.
 `;
 
-type Response = {
-  messages: SystemMessage[];
-  action: ActionType;
-  input: SystemMessage;
-};
-
 export const ServiceAgent = async (state: typeof StateAnnotation.State): Promise<Response> => {
   console.log("Entrando no nó: service_agent");
   console.log("Ação atual:", state.action);
@@ -36,6 +30,12 @@ export const ServiceAgent = async (state: typeof StateAnnotation.State): Promise
   return {
     messages: [systemResponse],
     action: ActionType.RESPONDER,
-    input: systemResponse,
+    input: systemResponse.content.toString(),
   }
+};
+
+type Response = {
+  messages: SystemMessage[];
+  action: ActionType;
+  input: string;
 };

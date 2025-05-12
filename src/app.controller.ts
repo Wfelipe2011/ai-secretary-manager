@@ -18,7 +18,6 @@ export class AppController {
     
     const conversationalStream = await graph.invoke({
       messages: [new HumanMessage({ content: chatInput })],
-      nextRepresentative: "RESPOND",
     }, {
       configurable: {
         thread_id: uuid

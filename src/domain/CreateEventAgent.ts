@@ -26,12 +26,6 @@ const validationSchema = z.object({
   question: z.string().nullable().describe("Pergunta para dados faltantes ou null"),
 });
 
-type Response = {
-  messages: SystemMessage[];
-  action: ActionType;
-  input: SystemMessage;
-};
-
 export async function CreateEventAgent(state: typeof StateAnnotation.State): Promise<Response> {
   console.log("Entrando no nó: create_event_agent");
   console.log("Ação atual:", state.action);
@@ -70,3 +64,9 @@ export async function CreateEventAgent(state: typeof StateAnnotation.State): Pro
     input: new AIMessage(categorizationResponse.question || "Faltam dados para criar o evento"),
   };
 }
+
+type Response = {
+  messages: SystemMessage[];
+  action: ActionType;
+  input: SystemMessage;
+};
