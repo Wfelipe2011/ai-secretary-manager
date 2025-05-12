@@ -15,12 +15,17 @@ const model = new ChatOpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     model: "o4-mini",
 });
-
+// Dados confidenciais: Corte de cabelo dura 30 minutos, Barba dura 30 minutos.
 const systemMessageTemplate = ChatPromptTemplate.fromTemplate(`
 Você é um reescritor de mensagens. Sua tarefa é reescrever a mensagem do usuário de forma mais clara e objetiva, mantendo o mesmo significado.
 1. [Contexto: Texto anterior] — Utilize o contexto fornecido para compreender o sentido da mensagem.
 2. [Formatação de Datas/Horários: ISO 8601] — Se houver datas ou horários, converta-os para o formato 'YYYY-MM-DDThh:mm:ssZ'. Use {now} para cálculos relativos.
-3. [Reescrita: primeira pessoa] — Reescreva a mensagem do usuário de forma clara, objetiva e concisa, mantendo o mesmo significado e sem adicionar informações extras.
+3. [Serviços disponíveis] — Os únicos serviços disponíveis são: Corte de cabelo, Barba e Corte de cabelo e Barba.
+4. [Tempo de serviço] — Corte de cabelo dura 30 minutos, Barba dura 30 minutos.
+5. [Horário de funcionamento] — O horário de funcionamento é de segunda a sexta-feira, das 9h às 18h.
+6. [Data final] — Se a data final não for especificada, considere os serviços solicitados e calcule a data final com base na duração dos serviços.
+7. [Confirmar se Tudo Estiver Completo] — Se todos os itens estiverem presentes, responda confirmando as informações fornecidas, sem pedir nada mais.
+8. [Reescrita: primeira pessoa] — Reescreva a mensagem do usuário de forma clara, objetiva e concisa, mantendo o mesmo significado e sem adicionar informações extras.
 `);
 
 export const ThinkingAgent = async (state: typeof StateAnnotation.State): Promise<Response> => {

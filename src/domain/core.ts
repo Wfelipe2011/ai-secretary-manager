@@ -4,14 +4,12 @@ import { ServiceAgent } from "./ServiceAgent";
 import { ThinkingAgent } from "./ThinkingAgent";
 import { ActionType } from "src/enums/ActionType";
 import { CreateEventAgent } from "./CreateEventAgent";
+import { ThankAgent } from "./ThankAgent";
+import { FeedbackAgent } from "./FeedbackAgent";
 
 const StateAnnotation = Annotation.Root({
-  // Herda as especificações de mensagens
   ...MessagesAnnotation.spec,
-  // Campos adicionais específicos para o fluxo
-  // Próximo nó a ser chamado
   action: Annotation<ActionType>,
-  // Entrada para o nó atual
   input: Annotation<string>,
 });
 
@@ -25,30 +23,35 @@ function resolveNextNodeAfterThinking(state: typeof StateAnnotation.State): stri
     "CRIAR_AGENDAMENTO": "create_event_agent",
     "CONSULTAR_AGENDAMENTOS": "search_event_agent",
     "CANCELAR_AGENDAMENTO": "cancel_event_agent",
-    "RESPONDER": "__end__",
+    "AGRADECIMENTO": "thank_agent",
+    "RESPONDER": "feedback_agent",
   };
 
   return transitionMap[state.action] || "__end__";
 }
 
 const builder = new StateGraph(StateAnnotation)
-  // Adiciona os nós ao grafo 
   .addNode("thinking_agent", ThinkingAgent)
   .addNode("service_agent", ServiceAgent)
   .addNode("create_event_agent", CreateEventAgent)
-  // Adicionar condicional para o nó de categorização 
+  .addNode("thank_agent", ThankAgent)
+  .addNode("feedback_agent",FeedbackAgent)
   .addConditionalEdges(
     "thinking_agent",
     resolveNextNodeAfterThinking,
     {
       service_agent: "service_agent",
       create_event_agent: "create_event_agent",
+      thank_agent: "thank_agent",
+      feedback_agent: "feedback_agent",
       __end__: "__end__",
     }
   )
   .addEdge("__start__", "thinking_agent")
-  .addEdge("create_event_agent", "__end__")
+  .addEdge("create_event_agent", "feedback_agent")
   .addEdge("service_agent", "__end__")
+  .addEdge("thank_agent", "__end__")
+  .addEdge("feedback_agent", "__end__")
 
 console.log("Adicionadas transições!");
 

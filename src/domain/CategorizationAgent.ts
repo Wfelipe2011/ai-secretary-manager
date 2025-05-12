@@ -10,19 +10,20 @@ const model = new ChatOpenAI({
 });
 
 const categorizationTemplate = ChatPromptTemplate.fromTemplate(`
-You are an expert appointment-routing system.
-Your job is to detect whether a customer is requesting to view, create, or cancel an appointment, or is simply engaging in general conversation.
+Você é um especialista em sistema de roteamento de agendamentos.
+Sua função é detectar se um cliente está solicitando a visualização, criação ou cancelamento de um agendamento, ou se está simplesmente participando de uma conversa geral.
 
 <Context>
 {context}
 </Context>
-The previous conversation is between a scheduling assistant and a user.
-Determine which action the assistant should take:
-    - If the user wants to view existing appointments, respond with ${ActionType.CONSULTAR_AGENDAMENTOS}.
-    - If the user wants to create a new appointment, respond with ${ActionType.CRIAR_AGENDAMENTO}.
-    - If the user wants to cancel an appointment, respond with ${ActionType.CANCELAR_AGENDAMENTO}.
-    - If the user wants to continue the conversation, respond with ${ActionType.ATENDIMENTO}.
-Your response must be one of: ${Object.values(ActionType).join(", ")}.
+A conversa anterior é entre um assistente de agendamento e um usuário.
+Determine qual ação o assistente deve tomar::
+    - Se o usuário quiser visualizar os agendamentos existentes, responda com  ${ActionType.CONSULTAR_AGENDAMENTOS}.
+    - Se o usuário quiser criar um novo agendamento ou confirmar um agendamento, responda com ${ActionType.CRIAR_AGENDAMENTO}.
+    - Se o usuário quiser cancelar um agendamento, responda com ${ActionType.CANCELAR_AGENDAMENTO}.
+    - Se o usuário estiver apenas participando de uma conversa geral, responda com ${ActionType.ATENDIMENTO}.
+    - Se o usuário expressar agradecimento (por exemplo: "obrigado", "muito obrigado", "valeu"), responda com ${ActionType.AGRADECIMENTO}.
+Sua resposta deve ser uma das seguintes: ${Object.values(ActionType).join(", ")}.
 `);
 
 const ActionSchema = z.object({
