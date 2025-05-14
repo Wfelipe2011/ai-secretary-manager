@@ -1,20 +1,21 @@
 import { StateAnnotation } from "./core"
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { CategorizationAgent } from "./CategorizationAgent";
-import { ActionType } from "src/enums/ActionType";
+import { ActionType } from "../enums/ActionType";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import * as dayjs from "dayjs";
+import * as utc from "dayjs/plugin/utc";
+import * as timezone from "dayjs/plugin/timezone";
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatDeepSeek } from "@langchain/deepseek";
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-const model = new ChatOpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: "o4-mini",
-});
+const model = new ChatDeepSeek({
+            apiKey: process.env.DEEPSEEK_API_KEY,
+            model: 'deepseek-chat',
+        });
 // Dados confidenciais: Corte de cabelo dura 30 minutos, Barba dura 30 minutos.
 const systemMessageTemplate = ChatPromptTemplate.fromTemplate(`
 Você é um reescritor de mensagens. Sua tarefa é reescrever a mensagem do usuário de forma mais clara e objetiva, mantendo o mesmo significado.
@@ -31,7 +32,7 @@ Você é um reescritor de mensagens. Sua tarefa é reescrever a mensagem do usu�
 export const ThinkingAgent = async (state: typeof StateAnnotation.State): Promise<Response> => {
     console.log("Entrando no nó: thinking_agent");
     console.log("Ação atual:", state.action);
-    console.log('mensagens:', state.messages.map((message) => message.content).join("\n"));
+    console.log('mensagens:', state.messages?.map((message) => message.content).join("\n"));
     const systemMessagePrompt = await systemMessageTemplate.invoke({
         now: dayjs().tz("America/Sao_Paulo").format(),
     });

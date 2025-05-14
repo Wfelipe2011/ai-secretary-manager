@@ -1,12 +1,13 @@
 import { StateAnnotation } from "./core";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
-import { ActionType } from 'src/enums/ActionType';
+import { ActionType } from '../enums/ActionType';
+import { ChatDeepSeek } from "@langchain/deepseek";
 
-const model = new ChatOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4.1-mini",
-})
+const model = new ChatDeepSeek({
+            apiKey: process.env.DEEPSEEK_API_KEY,
+            model: 'deepseek-chat',
+        });
 
 const systemMessage = `
 Você é o Assistente de Agendamento de uma Barbearia.

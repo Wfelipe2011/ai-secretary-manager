@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { AIMessageChunk } from "@langchain/core/messages";
-import { ActionType } from "src/enums/ActionType";
+import { ActionType } from "../enums/ActionType";
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatDeepSeek } from "@langchain/deepseek";
 
-const model = new ChatOpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: "o4-mini",
-});
+const model = new ChatDeepSeek({
+            apiKey: process.env.DEEPSEEK_API_KEY,
+            model: 'deepseek-chat',
+        });
 
 const categorizationTemplate = ChatPromptTemplate.fromTemplate(`
 Você é um especialista em sistema de roteamento de agendamentos.
