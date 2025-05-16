@@ -1,7 +1,7 @@
-import { EventAgent } from './EventAgent';
 import { AgentExecutor } from 'langchain/agents';
-import { SmartDateTimeTool } from '../tools/SmartDateTimeTool';
-import { CreateEventTool } from '../tools/CreateEventTool';
+import { SmartDateTimeTool } from '../tools/DateTimeParserTool';
+import { CreateEventTool } from '../tools/UserInfoTool';
+import { EventAgent } from './EventAgent';
 
 // jest timeout 30 segundos
 jest.setTimeout(30000);

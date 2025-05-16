@@ -1,0 +1,14 @@
+{
+    "material-icon-theme.activeIconPack": "nest",
+    "material-icon-theme.folders.theme": "specific",
+    "eslint.validate": [
+        "typescript"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "problems.showCurrentInStatus": true,
+    "editor.formatOnSave": true,
+    "eslint.alwaysShowStatus": true
+}

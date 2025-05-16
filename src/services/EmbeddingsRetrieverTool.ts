@@ -1,12 +1,12 @@
-import "dotenv/config";
 import {
-    PGVectorStore,
     DistanceStrategy,
+    PGVectorStore,
 } from "@langchain/community/vectorstores/pgvector";
+import type { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
+import "dotenv/config";
 import { PoolConfig } from "pg";
 import { v4 as uuidv4 } from "uuid";
-import type { Document } from "@langchain/core/documents";
 
 const embeddings = new OpenAIEmbeddings({
     apiKey: process.env.OPENAI_API_KEY,
@@ -23,7 +23,7 @@ const config = {
         password: process.env.PG_PASSWORD,
         database: process.env.PG_DATABASE,
     } as PoolConfig,
-    tableName: "DocumentVector",
+    tableName: "document_vectors",
     columns: {
         idColumnName: "id",
         vectorColumnName: "vector",

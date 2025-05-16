@@ -14,7 +14,6 @@ model schedules {
   id        Int      @id @default(autoincrement())
   title     String
   start     DateTime
-  end       DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -49,8 +48,8 @@ model services {
   category        String
   name            String
   description     String
-  duration        String
-  price           String
+  duration        BigInt
+  price           Decimal
   paymentMethods  String[]
   confidentiality String[]
   createdAt       DateTime @default(now())

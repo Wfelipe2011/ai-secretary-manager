@@ -1,47 +1,61 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { MemorySaver, StateGraph } from '@langchain/langgraph';
+import { Body, Controller, Post } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { HumanMessage } from '@langchain/core/messages';
-import { graph } from './domain/core';
+import { EventAgent } from './agents/EventAgent';
+import { StateAnnotation } from './graph/graph-state-annotation';
 
+const checkpointer = new MemorySaver();
 const uuid = uuidv4()
+const eventAgent = EventAgent.createAgent();
+const builder = new StateGraph(StateAnnotation);
 
+builder
+  .addNode(EventAgent.name, eventAgent.invoke.bind(eventAgent))
+  .addEdge("__start__", EventAgent.name)
+  .addEdge(EventAgent.name, "__end__")
 @Controller()
 export class AppController {
   constructor(
   ) { }
 
-  @Post('/chat/:phone')
-  async chat(
-    @Param('phone') phone: string,
-    @Body('message') message: string,
-  ) {
-
-    return {
-
-    }
-  }
-
   @Post('/receiver')
-  async receiver(
+  async chat(
     @Body('chatInput') chatInput: string,
   ) {
-    console.log("Recebendo entrada do chat:", chatInput);
 
+    const graph = builder.compile({ checkpointer });
     const conversationalStream = await graph.invoke({
-      messages: [new HumanMessage({ content: chatInput })],
+      input: chatInput,
     }, {
       configurable: {
         thread_id: uuid
       }
     });
 
-    const response = conversationalStream.messages[conversationalStream.messages.length - 1].content;
+    return conversationalStream['output']
+  }
 
-    console.log("Resposta final gerada:", response);
+  @Post('/receiver/:phone')
+  async receiver(
+    @Body('chatInput') chatInput: string,
+  ) {
+    // console.log("Recebendo entrada do chat:", chatInput);
+
+    // const conversationalStream = await graph.invoke({
+    //   messages: [new HumanMessage({ content: chatInput })],
+    // }, {
+    //   configurable: {
+    //     thread_id: uuid
+    //   }
+    // });
+
+    // const response = conversationalStream.messages[conversationalStream.messages.length - 1].content;
+
+    // console.log("Resposta final gerada:", response);
     // await new Promise(resolve => setTimeout(resolve, 1000)); // Simulando um atraso de 2 segundos
-    return {
-      response
-      // response: "Resposta gerada com sucesso",
-    }
+    // return {
+    //   response
+    //   // response: "Resposta gerada com sucesso",
+    // }
   }
 }

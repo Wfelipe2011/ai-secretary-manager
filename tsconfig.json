@@ -5,17 +5,29 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    // Configurações de Strictness aumentadas
+    "strict": true,
+    "skipLibCheck": false, // Verifica tipos em arquivos de declaração
+    "strictNullChecks": true, // Já habilitado pelo 'strict'
+    "noImplicitAny": true, // Já habilitado pelo 'strict'
+    "strictBindCallApply": true, // Já habilitado pelo 'strict'
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    // Novas flags adicionais para tipagem extrema
+    "exactOptionalPropertyTypes": true, // Impede optional properties de aceitar 'undefined'
+    "noUncheckedIndexedAccess": true, // Adiciona 'undefined' ao acessar índices não verificados
+    "noImplicitOverride": true, // Exige 'override' em métodos sobrescritos
+    "noPropertyAccessFromIndexSignature": true, // Force acesso via index signature
+    "allowUnreachableCode": false, // Erro em código inalcançável
+    "allowUnusedLabels": false, // Erro em labels não utilizadas
+    "noUnusedLocals": true, // Erro em variáveis não usadas
+    "noUnusedParameters": true // Erro em parâmetros não usados
   }
 }
