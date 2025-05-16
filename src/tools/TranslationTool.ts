@@ -1,42 +1,40 @@
-import { z } from "zod";
-import { StructuredTool } from "langchain/tools";
-import { ChatOpenAI } from "@langchain/openai";
+import { ToolInputSchemaBase } from "@langchain/core/dist/tools/types";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatDeepSeek } from "@langchain/deepseek";
+import "dotenv/config";
+import { DynamicStructuredTool } from "langchain/tools";
+import { z } from "zod";
 
-export class TranslationTool extends StructuredTool {
-    name = "text_translator";
-    description = "Traduz texto de português para inglês";
+const model = new ChatDeepSeek({
+    apiKey: process.env["DEEPSEEK_API_KEY"]!,
+    model: 'deepseek-chat',
+});
 
-    schema = z.object({
+export const TranslationTool = new DynamicStructuredTool({
+    name: "translation",
+    description: "Translates text from Portuguese to English",
+    schema: z.object({
         text: z.string().describe("Texto em português para traduzir"),
         context: z.string().optional().describe("Contexto adicional para melhor tradução")
-    });
+    }) as unknown as ToolInputSchemaBase,
 
-    private translator: ChatDeepSeek;
+    func: async ({ text, context }: { text: string, context: string }): Promise<string> => {
+        const systemMessageTemplate = ChatPromptTemplate.fromTemplate(`You are a translator from Portuguese to English.
+Translate the user's message into English, preserving meaning, and respond with **only** the translated text.
+Do not include any commentary, analysis, or extra information.
 
-    constructor() {
-        super();
-        this.translator = new ChatDeepSeek({
-                    apiKey: process.env.DEEPSEEK_API_KEY,
-                    model: 'deepseek-chat',
-                });
-    }
+Context: {context}
 
-    async _call({ text, context }: z.infer<typeof this.schema>) {
-        const prompt = `
-    Traduza para o inglês o seguinte texto em português:
-    
-    Contexto: ${context || "Agendamento de serviços"}
-    
-    Texto: "${text}"
-    
-    Regras:
-    1. Traduza o resto do texto normalmente
-    
-    Apenas retorne a tradução, sem comentários.
-    `;
+Text to translate:
+{text}
+        `);
 
-        const response = await this.translator.invoke(prompt);
+        const prompt = await systemMessageTemplate.formatPromptValue({
+            text,
+            context
+        });
+
+        const response = await model.invoke(prompt.messages);
         return response.content.toString();
     }
-}
+})
