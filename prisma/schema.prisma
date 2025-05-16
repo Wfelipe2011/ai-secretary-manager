@@ -7,22 +7,56 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [pgvector(map: "vector")]  // Remove o schema parameter
+  extensions = [pgvector(map: "vector")] // Remove o schema parameter
 }
 
-model schedule {
-  id        String   @id @default(cuid())
+model schedules {
+  id        Int      @id @default(autoincrement())
   title     String
   start     DateTime
   end       DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userId    Int
+  user      users     @relation(fields: [userId], references: [id])
+  service   services? @relation(fields: [serviceId], references: [id])
+  serviceId Int?
+
+  @@map("schedules") // Mapeia para a tabela schedules
 }
 
+model users {
+  id        Int         @id @default(autoincrement())
+  name      String
+  phone     String      @unique
+  schedules schedules[]
 
-model DocumentVector {
-  id        String  @id @default(uuid())
-  content   String
-  metadata  Json     // Armazena metadados como JSON
-  vector Unsupported("vector")?
+  @@map("users") // Mapeia para a tabela users
+}
+
+model documentVectors {
+  id       String                 @id @default(uuid())
+  content  String
+  metadata Json // Armazena metadados como JSON
+  vector   Unsupported("vector")?
+
+  @@map("document_vectors") // Mapeia para a tabela document_vectors
+}
+
+model services {
+  id              Int      @id @default(autoincrement())
+  category        String
+  name            String
+  description     String
+  duration        String
+  price           String
+  paymentMethods  String[]
+  confidentiality String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  schedule schedules[]
+
+  @@map("services") // Mapeia para a tabela services
 }
